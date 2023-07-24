@@ -46,9 +46,9 @@ function BookForm({ book, validate }) {
   const onSubmit = async (data) => {
     // When we create a new book
     if (!book) {
-      if (!data.file[0]) {
+      /*if (!data.file[0]) {
         alert('Vous devez ajouter une image');
-      }
+      }*/
       const newBook = await addBook(data);
       if (!newBook.error) {
         validate(true);
