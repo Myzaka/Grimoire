@@ -14,10 +14,14 @@ exports.getOneBook = (req, res, next) => {
   };
 
 exports.createOneBook = (req, res, next) => {
-  console.log(req.body, 'test');
-  delete req.body._id;
+  const bookObject = JSON.parse(req.body.book);
+  delete bookObject._id;
+  delete bookObject._userId;
+  console.log(req.file)
   const book = new Book({
-    ...req.body
+    ...bookObject,
+    userId: req.auth.userId,
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
   console.log(book);
   book.save()
