@@ -10,12 +10,18 @@ import bookAdd from '../../images/book_add.jpg';
 function AddBook() {
   const navigate = useNavigate();
   const { connectedUser, auth, userLoading } = useUser();
+  console.log(connectedUser);
+  console.log(auth);
+  console.log(userLoading);
   const [created, setCreated] = useState(false);
   useEffect(() => {
     if (!userLoading) {
+      console.log('test10');
       if (!connectedUser || !auth) {
+        console.log('test11');
         navigate(APP_ROUTES.SIGN_IN);
       }
+      console.log('test12');
     }
   }, [userLoading]);
 

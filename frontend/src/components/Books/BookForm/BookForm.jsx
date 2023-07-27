@@ -44,22 +44,30 @@ function BookForm({ book, validate }) {
   }, [formState]);
 
   const onSubmit = async (data) => {
+    console.log(data);
     // When we create a new book
     if (!book) {
-      /*if (!data.file[0]) {
+      if (data.file[0]) {
         alert('Vous devez ajouter une image');
-      }*/
+      }
       const newBook = await addBook(data);
+      console.log('test1');
+      console.log(newBook);
       if (!newBook.error) {
+        console.log('test2');
         validate(true);
       } else {
+        console.log('test3');
         alert(newBook.message);
       }
     } else {
       const updatedBook = await updateBook(data, data.id);
+      console.log('test4');
       if (!updatedBook.error) {
+        console.log('test5');
         navigate('/');
       } else {
+        console.log('test6');
         alert(updatedBook.message);
       }
     }

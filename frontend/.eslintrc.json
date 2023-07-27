@@ -17,5 +17,8 @@
         "react"
     ],
     "rules": {
+        "linebreak-style": ["error", "unix"],
+        "no-console": "off",
+        "no-alert": "off"
     }
 }
