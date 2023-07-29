@@ -96,7 +96,6 @@ export async function rateBook(id, userId, rating) {
     userId,
     rating: parseInt(rating, 10),
   };
-
   try {
     const response = await axios.post(`${API_ROUTES.BOOKS}/${id}/rating`, data, {
       headers: {

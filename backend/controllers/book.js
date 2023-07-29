@@ -71,3 +71,42 @@ exports.createOneBook = (req, res, next) => {
           res.status(500).json({ error });
       });
 };
+
+exports.rateOneBook = (req, res, next) => {
+  const newRating = { ...req.body };
+  delete newRating._userId;
+  delete newRating._id;
+
+  const userId = req.auth.userId;
+  const bookId = req.params.id;
+
+  Book.findById(bookId)
+      .then((book) => {
+          if (!book) {
+              return res.status(404).json({ error: "Livre non trouvé." });
+          }
+
+          if (hasUserRatedBook(book, userId)) {
+              return res.status(400).json({ error: "Vous avez déjà noté ce livre." });
+          }
+
+          const ratingData = {
+              userId: userId,
+              grade: newRating.rating
+          };
+
+          book.ratings.push(ratingData);
+          return book.save();
+      })
+      .then((updatedBook) => {
+          res.status(200).json({ message: "Merci d'avoir noté ce livre !", book: updatedBook });
+      })
+      .catch((error) => {
+          res.status(400).json({ error });
+      });
+};
+
+function hasUserRatedBook(book, userId) {
+  return book.ratings.some((rating) => rating.userId === userId);
+}
+
