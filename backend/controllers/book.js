@@ -96,6 +96,16 @@ exports.rateOneBook = (req, res, next) => {
           };
 
           book.ratings.push(ratingData);
+
+          // Calculer la nouvelle note moyenne
+          const totalRatings = book.ratings.length;
+          const totalGradeSum = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
+          const newAverageRating = totalGradeSum / totalRatings;
+
+          // Mettre à jour la note moyenne dans le modèle Book
+          
+          book.averageRating = parseFloat(newAverageRating.toFixed(1));
+
           return book.save();
       })
       .then((updatedBook) => {
@@ -109,4 +119,21 @@ exports.rateOneBook = (req, res, next) => {
 function hasUserRatedBook(book, userId) {
   return book.ratings.some((rating) => rating.userId === userId);
 }
+
+
+exports.bestrating = (req, res, next) => {
+  Book.aggregate([
+    {
+      $match: { ratings: { $exists: true, $ne: [] } } // Filter books with non-empty ratings array
+    },
+    {
+      $sort: { averageRating: -1 } // Sort the books in descending order of the existing averageRating field
+    },
+    {
+      $limit: 3 // Get the top 3 best-rated books
+    }
+  ])
+    .then(books => res.status(200).json(books))
+    .catch(error => res.status(400).json({ error }));
+};
 

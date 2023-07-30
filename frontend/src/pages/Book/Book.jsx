@@ -19,8 +19,10 @@ function Book() {
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
+  console.log('Le composant Book est rendu.');
 
   useEffect(() => {
+    console.log('params.id:', params.id);
     async function getItem() {
       const data = await getBook(params.id);
       if (data) {

@@ -11,6 +11,12 @@ import { rateBook } from '../../../lib/common';
 function BookRatingForm({
   rating, setRating, userId, setBook, id, userRated,
 }) {
+  console.log(rating);
+  console.log(setRating);
+  console.log(userId);
+  console.log(setBook);
+  console.log(id);
+  console.log(userRated);
   const { connectedUser, auth } = useUser();
   const navigate = useNavigate();
   const { register, formState, handleSubmit } = useForm({
