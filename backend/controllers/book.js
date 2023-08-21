@@ -99,17 +99,23 @@ exports.rateOneBook = (req, res, next) => {
 
           // Calculer la nouvelle note moyenne
           const totalRatings = book.ratings.length;
-          const totalGradeSum = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
-          const newAverageRating = totalGradeSum / totalRatings;
 
-          // Mettre à jour la note moyenne dans le modèle Book
-          
-          book.averageRating = parseFloat(newAverageRating.toFixed(1));
+          if (totalRatings > 0) {
+            const totalGradeSum = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
+            const newAverageRating = totalGradeSum / totalRatings;
+
+            // Mettre à jour la note moyenne dans le modèle Book
+            book.averageRating = parseFloat(newAverageRating.toFixed(1));
+          } else {
+            // Cas où il n'y a pas de notes, attribuer une valeur par défaut (par exemple, 0)
+            book.averageRating = 0;
+          }
+
 
           return book.save();
       })
       .then((updatedBook) => {
-          res.status(200).json({ message: "Merci d'avoir noté ce livre !", book: updatedBook });
+          res.status(200).json( updatedBook );
       })
       .catch((error) => {
           res.status(400).json({ error });

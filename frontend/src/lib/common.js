@@ -104,7 +104,9 @@ export async function rateBook(id, userId, rating) {
     });
     const book = response.data;
     // eslint-disable-next-line no-underscore-dangle
-    book.id = book._id;
+    book.id = '64c6253d0ccdb7bf2df0b681';
+    console.log('Hop !');
+    console.log(book);
     return book;
   } catch (e) {
     console.error(e);

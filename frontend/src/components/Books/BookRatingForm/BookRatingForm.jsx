@@ -36,11 +36,16 @@ function BookRatingForm({
     if (!connectedUser || !auth) {
       navigate(APP_ROUTES.SIGN_IN);
     }
+    console.log(id);
+    console.log(userId);
+    console.log(rating);
     const update = await rateBook(id, userId, rating);
     console.log(update);
     if (update) {
       // eslint-disable-next-line no-underscore-dangle
       setBook({ ...update, id: update._id });
+      /* setBook({ ...update, id: '64c6253d0ccdb7bf2df0b681' }); */
+      console.log('setbook lancé');
     } else {
       alert(update);
     }
