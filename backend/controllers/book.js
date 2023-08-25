@@ -16,26 +16,30 @@ exports.getOneBook = (req, res, next) => {
 
 exports.createOneBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
+  const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.imageRef}`;
   delete bookObject._id;
   delete bookObject._userId;
   console.log(req.file)
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    imageUrl:imageUrl
   });
-  console.log(book);
+  console.log(`${req.protocol}://${req.get('host')}/images/${req.file.filename}`);
   book.save()
     .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
     .catch(error => res.status(402).json({ error }));
   };
 
-  exports.modifyBook = (req, res, next) => {
+
+exports.modifyBook = (req, res, next) => {
+    const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.imageRef}`;
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        //imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl:imageUrl
     } : { ...req.body };
-  
+    
     delete bookObject._userId;
     Book.findOne({_id: req.params.id})
         .then((book) => {
