@@ -33,11 +33,9 @@ exports.createOneBook = (req, res, next) => {
 
 
 exports.modifyBook = (req, res, next) => {
-    const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.imageRef}`;
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        //imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        imageUrl:imageUrl
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.imageRef}`
     } : { ...req.body };
     
     delete bookObject._userId;
