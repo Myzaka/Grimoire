@@ -3,14 +3,15 @@ const sharp = require("sharp");
 
 module.exports = async (req, res, next) => {
   try {
-      const { buffer, originalname } = req.file;
+    console.log(req.file);  
+    const { buffer, originalname } = req.file;
       const fileInfo = path.parse(originalname);
       const ref = Date.now()+`-${fileInfo.name}.webp`;
 
       const outputPath = path.join(__dirname, '..', 'images', ref);
 
       await sharp(buffer)
-          .webp({ quality: 20 })
+          .webp({ quality: 100 })
           .toFile(outputPath);
       req.imageRef = ref;
       next();
