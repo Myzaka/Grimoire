@@ -19,31 +19,38 @@ exports.createOneBook = (req, res, next) => {
   const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.imageRef}`;
   delete bookObject._id;
   delete bookObject._userId;
-  console.log(req.file)
+  //console.log(req.file)
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
     imageUrl:imageUrl
   });
-  console.log(`${req.protocol}://${req.get('host')}/images/${req.file.filename}`);
+  //console.log(`${req.protocol}://${req.get('host')}/images/${req.file.filename}`);
   book.save()
     .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
     .catch(error => res.status(402).json({ error }));
   };
 
 
-exports.modifyBook = (req, res, next) => {
-    const bookObject = req.file ? {
-        ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.imageRef}`
+/*exports.modifyBook = (req, res, next) => {
+
+      
+  const bookObject = req.imageRef ? {
+    ...JSON.parse(req.body.book),
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.imageRef}`
+
     } : { ...req.body };
     
     delete bookObject._userId;
     Book.findOne({_id: req.params.id})
         .then((book) => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message : 'Not authorized'});
+                res.status(403).json({ message : '403: unauthorized request'});
             } else {
+              
+              const filename = book.imageUrl.split('/images/')[1];
+              console.log(filename);
+              fs.unlink(`images/${filename}`);
               Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
                 .then(() => res.status(200).json({message : 'Livre modifié!'}))
                 .catch(error => res.status(401).json({ error }));
@@ -52,14 +59,62 @@ exports.modifyBook = (req, res, next) => {
         .catch((error) => {
             res.status(400).json({ error });
         });
+ };*/
+
+ exports.modifyBook = async (req, res, next) => {
+     const hasImage = Boolean(req.imageRef); // Vérifiez si un fichier image a été chargé
+ 
+     const bookObject = hasImage ? {
+         ...JSON.parse(req.body.book),
+         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.imageRef}`
+     } : { ...req.body };
+ 
+     delete bookObject._userId;
+ 
+     try {
+         const book = await Book.findOne({ _id: req.params.id });
+ 
+         if (!book) {
+             return res.status(404).json({ message: 'Book not found' });
+         }
+ 
+         if (book.userId != req.auth.userId) {
+             return res.status(403).json({ message: '403: unauthorized request' });
+         }
+ 
+         if (hasImage) {
+             const filename = book.imageUrl.split('/images/')[1];
+             console.log(filename);
+ 
+             fs.unlink(`images/${filename}`, (err) => {
+                 if (err) {
+                     console.error(err);
+                 }
+ 
+                 // Continuez avec la mise à jour du livre
+                 Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+                     .then(() => res.status(200).json({ message: 'Livre modifié!' }))
+                     .catch(error => res.status(401).json({ error }));
+             });
+         } else {
+             // Aucun fichier image n'a été chargé, effectuez simplement la mise à jour du livre
+             Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+                 .then(() => res.status(200).json({ message: 'Livre modifié!' }))
+                 .catch(error => res.status(401).json({ error }));
+         }
+     } catch (error) {
+         res.status(400).json({ error });
+     }
  };
+ 
+
 
  exports.deleteBook = (req, res, next) => {
-  console.log(req.params.id);
+  //console.log(req.params.id);
   Book.findOne({ _id: req.params.id})
       .then(book => {
           if (book.userId != req.auth.userId) {
-              res.status(401).json({message: 'Not authorized'});
+              res.status(403).json({message: '403: unauthorized request'});
           } else {
               const filename = book.imageUrl.split('/images/')[1];
               fs.unlink(`images/${filename}`, () => {
